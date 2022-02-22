@@ -45,6 +45,12 @@ ENDSSH'
       }
     }
     
+    stage('ArchiveArtifacts'){
+            steps{
+                archiveArtifacts artifacts: '**', followSymlinks: false
+            }
+        }
+    
     stage ('Start the node service') {
       steps {
         sh '''
@@ -62,11 +68,5 @@ ENDSSH'
         fi '''
       }
     }
-
-    stage('ArchiveArtifacts'){
-            steps{
-                archiveArtifacts artifacts: '**', followSymlinks: false
-            }
-        }
-    }
+  }
 }
