@@ -59,7 +59,7 @@ ENDSSH'
         set -x
         ssh centos@192.168.231.144 "
                     sudo chmod -R 775 /home/centos/deploy/
-                    sudo node /home/centos/deploy/index.js > /dev/null 2>&1 <&- & "
+                    node /home/centos/deploy/index.js > /dev/null 2>&1 <&- & "
         sudo sleep 5                    
         X=$(curl -k  -o /dev/null -s -w %{http_code} http://192.168.231.144:3000)
         if [ $X -eq 200 ];
