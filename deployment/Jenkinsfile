@@ -38,6 +38,7 @@ ENDSSH
           then
               sudo kill -9 $Z
               echo "node service stop successfully."
+              sudo pkill node
               exit 0
           else
               echo "node service failed"
