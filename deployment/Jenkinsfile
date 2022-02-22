@@ -62,13 +62,14 @@ ENDSSH'
       }
     }
 
+
     stage ('push artifact') {
             steps {
                 
                 sh 'mkdir archive'
-                sh 'sudo mv /var/lib/jenkins/workspace/deploy-rollback-pipeline/deployment.`date +%Y.%m.%d.%H.%M.%S` /archive '
-                zip zipFile: '/archive/*.zip', archive: false, dir: 'archive'
-                archiveArtifacts artifacts: '/archive/*.zip', fingerprint: true
+                sh 'sudo mv /var/lib/jenkins/workspace/deploy-rollback-pipeline/deployment.`date +%Y.%m.%d.%H.%M.%S`
+                zip zipFile: '/**/*.zip', archive: false, dir: 'archive'
+                archiveArtifacts artifacts: '/**/*.zip', fingerprint: true
             }
         }
 
