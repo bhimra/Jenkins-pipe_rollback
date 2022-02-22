@@ -4,15 +4,7 @@ pipeline {
   tools {nodejs "node"}
     
  stages {
-    stage ('clean workspace from jenkins server') {
-      steps {
-        sh '''
-        set -x
-        sudo rm -rf /var/lib/jenkins/workspace/deploy-rollback-pipeline
-        '''
-      }
-    }
-    
+   
     stage('Copy Artifact') {
       steps {
             copyArtifacts filter: '**', fingerprintArtifacts: true, projectName: 'deploy-rollback-pipeline', selector: specific('$BUILD_NUMBER')
