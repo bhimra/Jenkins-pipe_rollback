@@ -3,8 +3,14 @@ pipeline {
     
   tools {nodejs "node"}
     
-  stages {
+ stages {
+    stage('Copy Artifact') {
+        steps {
+            copyArtifacts filter: '**', fingerprintArtifacts: true, projectName: 'deploy-rollback-pipeline', selector: specific('$BUILD_NUMBER')
+        }
+    }
 
+ stages {
     stage ('Prepare destination host') {
       steps {
         sh '''
@@ -43,19 +49,7 @@ ENDSSH'
       }
     }
 
-    stage('pull artifact') {
-        steps {
-            step([  $class: 'CopyArtifact',
-                    filter: '**',
-                    fingerprintArtifacts: false,
-                    projectName: 'deployment',
-                    selector: [$class: 'SpecificBuildSelector', buildNumber: '${BUILD_NUMBER}']
-            ])
-            unzip zipFile: '*.zip', dir: './archive_new'
-            sh 'cat archive_new/*.txt'
-        }
-    }
-
+  
     stage ('Start the Rollback service') {
       steps {
         sh '''
