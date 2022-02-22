@@ -21,9 +21,9 @@ ENDSSH
 
     stage('checkout + application scp') {
       steps {
-        git 'https://github.com/bhimra/jenkins.git'
-        sh 'sudo chmod -R 775 /var/lib/jenkins/workspace/deployment'
-        sh 'scp /var/lib/jenkins/workspace/deployment/index.js centos@192.168.231.144:/home/centos/deployment'
+        git 'https://github.com/bhimra/deploy-rollback-pipeline.git'
+        sh 'sudo chmod -R 775 /var/lib/jenkins/workspace/deploy-rollback-pipeline/'
+        sh 'scp /var/lib/jenkins/workspace/deploy-rollback-pipeline/index.js centos@192.168.231.144:/home/centos/deployment'
       }
     }
 
@@ -50,8 +50,6 @@ ENDSSH'
         sh '''
         set -x
         ssh centos@192.168.231.144 "
-                    set -x
-                    whoami
                     sudo chmod -R 775 /home/centos/deployment/
                     sudo node /home/centos/deployment/index.js > /dev/null 2>&1 <&- & "
         X=$(curl -k  -o /dev/null -s -w %{http_code} http://192.168.231.144:3000)
@@ -64,9 +62,19 @@ ENDSSH'
       }
     }
 
+    stage ('push artifact') {
+            steps {
+                
+                sh 'mkdir archive'
+                sh 'sudo mv /var/lib/jenkins/workspace/deploy-rollback-pipeline/deployment.`date +%Y.%m.%d.%H.%M.%S` /archive '
+                zip zipFile: '/archive/*.zip', archive: false, dir: 'archive'
+                archiveArtifacts artifacts: '/archive/*.zip', fingerprint: true
+            }
+        }
+
     stage ('Copy Artifact') {
         steps {
-            copyArtifacts filter: '**', fingerprintArtifacts: true, projectName: 'deployment', selector: specific('$BUILD_NUMBER')
+            copyArtifacts filter: '**', fingerprintArtifacts: true, projectName: 'deploy-rollback-pipeline', selector: specific('$BUILD_NUMBER')
         }
       }
     }
