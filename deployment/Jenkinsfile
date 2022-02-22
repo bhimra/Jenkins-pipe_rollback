@@ -9,6 +9,8 @@ pipeline {
       steps {
         sh '''
           ssh -T centos@192.168.231.144 << ENDSSH
+          sudo rm -rf /home/centos/deploy
+          sleep 2
           mkdir /home/centos/deploy/
           sudo chmod -R 775 /home/centos/deploy
           cd /home/centos/deploy/
