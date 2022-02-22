@@ -4,13 +4,22 @@ pipeline {
   tools {nodejs "node"}
     
  stages {
+    stage ('clean workspace from jenkins server') {
+      steps {
+        sh '''
+        set -x
+        sudo rm -rf /var/lib/jenkins/workspace/deploy-rollback-pipeline
+        '''
+      }
+    }
+    
     stage('Copy Artifact') {
-        steps {
+      steps {
             copyArtifacts filter: '**', fingerprintArtifacts: true, projectName: 'deploy-rollback-pipeline', selector: specific('$BUILD_NUMBER')
         }
     }
 
- stage ('Verify node service') {
+    stage ('Verify node service') {
       steps {
         sh '''
           ssh -t -t  centos@192.168.231.144 'bash -s << 'ENDSSH'
@@ -46,5 +55,17 @@ ENDSSH'
         fi '''
       }
     }
+
+post {
+        // Clean after build
+        always {
+            cleanWs(cleanWhenNotBuilt: false,
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    notFailBuild: true,
+                    patterns: [[pattern: '.gitignore', type: 'INCLUDE'],
+                               [pattern: '.propsfile', type: 'EXCLUDE']])
+        }
+     } 
   }
 } 
