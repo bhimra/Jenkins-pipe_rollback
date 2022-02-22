@@ -9,7 +9,8 @@ pipeline {
       steps {
         sh '''
           ssh -T centos@192.168.231.144 << ENDSSH
-          mkdir /home/centos/rollback
+          mkdir /home/centos/rollback/
+          sudo chmod -R 775 /home/centos/rollback
           cd /home/centos/rollback/
 ENDSSH
       '''
@@ -20,11 +21,11 @@ ENDSSH
       steps {
         git 'https://github.com/bhimra/jenkins.git'
         sh 'sudo chmod -R 775 /var/lib/jenkins/workspace/rollback'
-        sh 'scp /var/lib/jenkins/workspace/rollback/index.js centos@192.168.231.144:/home/centos/rollback'
+        sh 'scp /var/lib/jenkins/workspace/rollback/index2.js centos@192.168.231.144:/home/centos/rollback'
       }
     }
 
-    stage ('Verify node service') {
+    stage ('Verify node service state') {
       steps {
         sh '''
           ssh -t -t  centos@192.168.231.144 'bash -s << 'ENDSSH'
@@ -41,24 +42,59 @@ ENDSSH'
       '''
       }
     }
-    
-    stage ('Start the node service') {
+
+    stage('pull artifact') {
+        steps {
+            step([  $class: 'CopyArtifact',
+                    filter: '**',
+                    fingerprintArtifacts: false,
+                    projectName: 'deployment',
+                    selector: [$class: 'SpecificBuildSelector', buildNumber: '${BUILD_NUMBER}']
+            ])
+            unzip zipFile: '*.zip', dir: './archive_new'
+            sh 'cat archive_new/*.txt'
+        }
+    }
+
+    stage ('Start the Rollback service') {
       steps {
         sh '''
         set -x
         ssh centos@192.168.231.144 "
-                    set -x
-                    whoami
-                    sudo chmod -R 775 /home/centos/rollback/
-                    sudo node /home/centos/rollback/index.js > /dev/null 2>&1 <&- & "
+                    sudo chmod -R 775 /home/centos/rollback/        
+                    sudo node /home/centos/rollback/index2.js > /dev/null 2>&1 <&- & "
+        X=$(curl -k  -o /dev/null -s -w %{http_code} http://192.168.231.144:3000)
+        if [ $X -eq 000 ];
+            then
+                ssh centos@192.168.231.144 "
+                    sudo chmod -R 775 /home/centos/deployment/
+                    sudo node /home/centos/deployment/index.js > /dev/null 2>&1 <&- & "
         X=$(curl -k  -o /dev/null -s -w %{http_code} http://192.168.231.144:3000)
         if [ $X -eq 200 ];
             then
-                echo -e 'web site is running'
+                echo -e 'web site is running with version 1'
             else
-                echo -e 'web site is down' 
+                echo -e 'web site is down with version 1' 
+        fi 
         fi '''
       }
-    }            
+    } 
+
+    // stage ('Start the Rollback service') {
+    //   steps {
+    //     sh '''
+    //     set -x
+    //     ssh centos@192.168.231.144 "
+    //                 sudo chmod -R 775 /home/centos/deployment/
+    //                 sudo node /home/centos/deployment/index.js > /dev/null 2>&1 <&- & "
+    //     X=$(curl -k  -o /dev/null -s -w %{http_code} http://192.168.231.144:3000)
+    //     if [ $X -eq 200 ];
+    //         then
+    //             echo -e 'web site is running'
+    //         else
+    //             echo -e 'web site is down' 
+    //     fi '''
+    //   }
+    // } 
   }
 } 
