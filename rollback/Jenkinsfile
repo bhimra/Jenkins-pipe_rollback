@@ -20,6 +20,7 @@ pipeline {
               sudo kill -9 $Z
               echo "node service stop successfully."
               sudo pkill node
+              sudo rm -rf /home/centos/deploy/*
               exit 0
           else
               echo "node service failed"
