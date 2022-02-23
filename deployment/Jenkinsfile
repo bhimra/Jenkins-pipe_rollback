@@ -60,11 +60,6 @@ ENDSSH'
         if [ $X -eq 200 ];
             then
                 echo -e 'web site is running'
-//                 sudo mkdir /var/lib/jenkins/workspace/backup
-//                 sudo chown -R admin:admin /var/lib/jenkins/workspace/deploy-rollback-pipeline
-//                 cd /var/lib/jenkins/workspace/deploy-rollback-pipeline
-//                 sudo zip -r deploy.zip /var/lib/jenkins/workspace/deploy-rollback-pipeline/
-//                 sudo mv /var/lib/jenkins/workspace/deploy-rollback-pipeline/*.zip /var/lib/jenkins/workspace/backup
             else
                 echo -e 'web site is down' 
         fi '''
