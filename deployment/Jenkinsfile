@@ -24,11 +24,17 @@ ENDSSH
     stage('checkout + application scp') {
       steps {
         git 'https://github.com/bhimra/deploy-rollback-pipeline.git'
-        sh 'sudo chmod -R 775 /var/lib/jenkins/workspace/deploy-rollback-pipeline/'
-        sh 'scp /var/lib/jenkins/workspace/deploy-rollback-pipeline/index.js centos@192.168.231.144:/home/centos/deploy'
+        pwd
+        sh 'pwd && sudo chmod +x .'
+        sh 'scp index.js centos@192.168.231.144:/home/centos/deploy'
       }
     }
-
+    stage('ArchiveArtifacts'){
+            steps{
+                archiveArtifacts artifacts: '**', followSymlinks: false
+            }
+        }
+    
     stage ('Verify node service') {
       steps {
         sh '''
@@ -53,7 +59,7 @@ ENDSSH'
         sh '''
         set -x
         ssh centos@192.168.231.144 "
-                    sudo chmod -R 775 /home/centos/deploy/
+                    sudo chmod +x /home/centos/deploy/
                     node /home/centos/deploy/index.js > /dev/null 2>&1 <&- & "
         sudo sleep 5                    
         X=$(curl -k  -o /dev/null -s -w %{http_code} http://192.168.231.144:3000)
@@ -63,13 +69,7 @@ ENDSSH'
             else
                 echo -e 'web site is down' 
         fi '''
-      }
-    }
-    
-    stage('ArchiveArtifacts'){
-            steps{
-                archiveArtifacts artifacts: '**', followSymlinks: false
-            }
-        }
+       }
+     }
     }  
 }
