@@ -14,8 +14,8 @@ pipeline {
     stage ('Verify node service') {
       steps {
         sh '''
+          sh 'scp /var/lib/jenkins/workspace/deploy-rollback-pipeline/index.js centos@192.168.231.144:/home/centos/deploy'
           ssh -t -t  centos@192.168.231.144 'bash -s << 'ENDSSH'
-          whoami
           if [[ Z=$(sudo ps aux | grep -i [n]ode | awk 'NR==1' | gawk {'print $2'}) ]];
           then
               sudo kill -9 $Z
