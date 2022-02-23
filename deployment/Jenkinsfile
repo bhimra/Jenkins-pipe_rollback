@@ -103,8 +103,6 @@ ENDSSH
       }
     }    
 
-          
-
   post {
         // Clean after build
         always {
