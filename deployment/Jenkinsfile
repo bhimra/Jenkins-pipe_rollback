@@ -52,10 +52,10 @@ ENDSSH
               echo "node service failed"
           fi
 ENDSSH'
-      '''
+        '''
       }
     }
-    
+
     stage ('Start the node service') {
       steps {
         sh '''
