@@ -31,12 +31,13 @@ ENDSSH'
     stage ('Start the node service') {
       steps {
         sh 'pwd'
-        sh 'scp index.js centos@192.168.231.144:/home/centos/deploy' 
+        sh 'scp index.js centos@192.168.231.144:/home/centos/deploy'
         sh '''
-        ssh -t -t centos@192.168.231.144"
-                    cd /home/centos/deploy
+        ssh -T centos@192.168.231.144 << ENDSSH
+          cd /home/centos/deploy
                     sudo chmod +x *
-                    node index.js > /dev/null 2>&1 <&- &"
+                    node index.js > /dev/null 2>&1 <&- &
+ENDSSH
         sudo sleep 5            
         X=$(curl -k  -o /dev/null -s -w %{http_code} http://192.168.231.144:3000)
         if [ $X -eq 200 ];
@@ -44,7 +45,8 @@ ENDSSH'
                 echo -e 'web site is running'
             else
                 echo -e 'web site is down' 
-        fi '''
+        fi 
+        '''
       }
     }
   }
