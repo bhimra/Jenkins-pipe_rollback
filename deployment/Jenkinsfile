@@ -71,12 +71,5 @@ ENDSSH'
                 archiveArtifacts artifacts: '**', followSymlinks: false
             }
         }
-    }
-        
- post {
-    // Clean after build
-    always {
-        cleanWs()
-		}
     }  
 }
