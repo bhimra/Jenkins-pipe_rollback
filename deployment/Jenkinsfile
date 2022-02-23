@@ -5,6 +5,15 @@ pipeline {
     
   stages {
 
+    stage('Build') {
+      steps {
+                // Clean before build
+            cleanWs()
+                // We need to explicitly checkout from SCM here
+                echo "Workspace Clean"
+      }
+    }
+
     stage ('Prepare destination host') {
       steps {
         sh '''
@@ -47,12 +56,6 @@ ENDSSH'
       }
     }
     
-    stage('ArchiveArtifacts'){
-            steps{
-                archiveArtifacts artifacts: '**', followSymlinks: false
-            }
-        }
-    
     stage ('Start the node service') {
       steps {
         sh '''
@@ -65,17 +68,48 @@ ENDSSH'
         if [ $X -eq 200 ];
             then
                 echo -e 'web site is running'
+                sudo mkdir /var/lib/jenkins/workspace/backup
+                sudo chown -R admin:admin /var/lib/jenkins/workspace/deploy-rollback-pipeline
+                cd /var/lib/jenkins/workspace/deploy-rollback-pipeline
+                sudo zip -r deploy.zip /var/lib/jenkins/workspace/deploy-rollback-pipeline/
+                sudo mv /var/lib/jenkins/workspace/deploy-rollback-pipeline/*.zip /var/lib/jenkins/workspace/backup
             else
                 echo -e 'web site is down' 
         fi '''
       }
     }
     
+    stage('ArchiveArtifacts'){
+            steps{
+                archiveArtifacts artifacts: '**', followSymlinks: false
+            }
+        }
+
+    stage ('Backup te program') {
+      steps {
+        sh '''
+          
+          mkdir /home/centos/deploy_backup
+          mv /home/centos/de
+          sudo rm -rf /home/centos/deploy
+          sudo sleep 2
+          mkdir /home/centos/deploy/
+          sudo chmod -R 775 /home/centos/deploy
+          cd /home/centos/deploy/
+          sudo dnf install npm -y
+          sudo npm install
+ENDSSH
+      '''
+      }
+    }    
+
+          
+
   post {
         // Clean after build
         always {
             cleanWs()
-	     }
+			}
         }  
     } 
 }
