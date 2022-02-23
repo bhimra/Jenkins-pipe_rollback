@@ -21,7 +21,6 @@ pipeline {
               sudo pkill node
               sudo rm -rf /home/centos/deploy/*
               echo "node service stop successfully......................................."
-              exit 0
           else
               echo "node service failed.................................................."
           fi
@@ -33,7 +32,7 @@ ENDSSH'
     stage ('Start the node service') {
       steps {
         sh '''
-        sh ' scp index.js centos@192.168.231.144:/home/centos/deploy' 
+        sh 'scp index.js centos@192.168.231.144:/home/centos/deploy' 
         ssh centos@192.168.231.144 "
                     sudo chmod +x /home/centos/deploy/
                     node /home/centos/deploy/index.js > /dev/null 2>&1 <&- & "
