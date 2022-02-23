@@ -24,7 +24,6 @@ ENDSSH
     stage('checkout + application scp') {
       steps {
         git 'https://github.com/bhimra/deploy-rollback-pipeline.git'
-        pwd
         sh 'pwd && sudo chmod +x .'
         sh 'scp index.js centos@192.168.231.144:/home/centos/deploy'
       }
