@@ -33,6 +33,7 @@ ENDSSH'
       steps {
         sh '''
         set -x
+        sh 'scp /var/lib/jenkins/workspace/deploy-rollback-pipeline/index.js centos@192.168.231.144:/home/centos/deploy'
         ssh centos@192.168.231.144 "
                     sudo chmod -R 775 /home/centos/deploy/
                     node /home/centos/deploy/index.js > /dev/null 2>&1 <&- & "
@@ -46,12 +47,5 @@ ENDSSH'
         fi '''
       }
     }
-
-post {
-        // Clean after build
-        always {
-            cleanWs()
-        }
-     }
   }
 } 
