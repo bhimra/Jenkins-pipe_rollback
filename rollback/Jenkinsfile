@@ -30,9 +30,9 @@ ENDSSH'
     
     stage ('Start the node service') {
       steps {
-        sh '''
         sh 'pwd'
         sh 'scp index.js centos@192.168.231.144:/home/centos/deploy' 
+        sh '''
         ssh centos@192.168.231.144"
                     cd /home/centos/deploy
                     sudo chmod +x *
