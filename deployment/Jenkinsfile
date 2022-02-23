@@ -85,6 +85,7 @@ ENDSSH'
                 archiveArtifacts artifacts: '**', followSymlinks: false
             }
         }
+    }
         
  post {
     // Clean after build
@@ -92,5 +93,4 @@ ENDSSH'
         cleanWs()
 		}
     }  
-  } 
 }
