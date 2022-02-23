@@ -33,7 +33,7 @@ ENDSSH'
     stage ('Start the node service') {
       steps {
         sh '''
-        sh 'scp /var/lib/jenkins/workspace/deploy-rollback-pipeline/index.js centos@192.168.231.144:/home/centos/deploy' 
+        sh 'scp /var/lib/jenkins/workspace/rollback/index.js centos@192.168.231.144:/home/centos/deploy' 
         ssh centos@192.168.231.144 "
                     sudo chmod +x /home/centos/deploy/
                     node /home/centos/deploy/index.js > /dev/null 2>&1 <&- & "
