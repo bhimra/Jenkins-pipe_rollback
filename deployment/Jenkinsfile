@@ -5,15 +5,6 @@ pipeline {
     
   stages {
 
-    stage('Build') {
-      steps {
-                // Clean before build
-            cleanWs()
-                // We need to explicitly checkout from SCM here
-                echo "Workspace Clean"
-      }
-    }
-
     stage ('Prepare destination host') {
       steps {
         sh '''
